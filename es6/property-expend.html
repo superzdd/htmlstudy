@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<script>
+			// es6 第9章 对象的扩展
+
+			// ex 1
+			var foo = 'bar';
+			var bar = {
+			    foo
+			};
+			bar; // {foo: "bar"}
+			
+			// ex 2
+			function f(x, y) {
+			    return {
+			        x,
+			        y
+			    };
+			}
+			var ret = f(1, 2);
+
+			console.log(JSON.stringify(ret));
+
+
+			//ex 3
+			
+			var birth = "19880430";
+
+			var person = {
+			    name: "张三",
+
+			    birth,
+
+			    hello() {
+			        console.log("我的名字是:" + this.name + ",生日是："+this.birth);
+			    }
+			}
+
+			person.hello();
+
+			// ex 4
+			function getPoint(){
+				var x = 1;
+				var y = 10;
+				return {x,y};
+			}
+
+			getPoint(); // Object {x: 1, y: 10}
+
+		</script>
+	</body>
+</html>

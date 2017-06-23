@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>3daxis</title>
+
+		<style>
+			#canvas-frame {
+				border: none;
+				cursor: pointer;
+				width: 100%;
+				height: 600px;
+				background-color: #EEEEEE;
+			}
+		</style>
+
+		<script src="../js/three.js"></script>
+
+		<script>
+			var renderer;
+
+			function initThree() {
+				width = document.getElementById('canvas-frame').clientWidth;
+				height = document.getElementById('canvas-frame').clientHeight;
+				renderer = new THREE.WebGLRenderer({
+					antialias: true,
+				});
+
+				renderer.setSize(width, height);
+				document.getElementById('canvas-frame').appendChild(renderer.domElement);
+				renderer.setClearColor(0xFFFFFF, 1.0);
+			}
+
+			var camera;
+			var camera_radius = Math.sqrt(50 * 50 + 200 * 200);
+			var camera_angle = Math.atan(200 / 50);
+			var camera_angle_vertical = Math.atan(0.25);
+
+			function initCamera() {
+				//				camera = new THREE.PerspectiveCamera(75, width / height, 1, 10000);
+				//				camera.position.x = 0;
+				//				camera.position.y = 1000;
+				//				camera.position.z = 0;
+				//				camera.up.x = 0;
+				//				camera.up.y = 0;
+				//				camera.up.z = 1;
+				//				camera.lookAt({
+				//					x: 0,
+				//					y: 0,
+				//					z: 0
+				//				})
+
+				camera = new THREE.PerspectiveCamera(70, width / height, 1, 10000);
+				camera.position.x = 50;
+				camera.position.y = 50;
+				camera.position.z = 200;
+				camera.up.x = 0;
+				camera.up.y = 1;
+				camera.up.z = 0;
+				camera.lookAt({
+					x: 0,
+					y: 0,
+					z: 0
+				})
+			}
+
+			var scene;
+
+			function initScene() {
+				scene = new THREE.Scene();
+			}
+
+			var light;
+
+			function initLight() {
+				light = new THREE.AmbientLight(0x000000);
+				light.position.set(100, 100, 200);
+				scene.add(light);
+			}
+
+			function initLineX() {
+				var geometry = new THREE.Geometry();
+				var material = new THREE.LineBasicMaterial({
+					vertexColors: THREE.VertexColors,
+				});
+				var color1 = new THREE.Color(0xFF0000);
+				var color2 = new THREE.Color(0xFF0000);
+
+				// 显得材质可以由2点的颜色决定
+				var p1 = new THREE.Vector3(0, 0, 0);
+				var p2 = new THREE.Vector3(100, 0, 0);
+				geometry.vertices.push(p1);
+				geometry.vertices.push(p2);
+				geometry.colors.push(color1, color2);
+
+				var line = new THREE.Line(geometry, material, THREE.LinePieces);
+				scene.add(line);
+			}
+
+			function initLineY() {
+				var geometry = new THREE.Geometry();
+				var material = new THREE.LineBasicMaterial({
+					vertexColors: THREE.VertexColors,
+				});
+				var color1 = new THREE.Color(0xFFFF33);
+				var color2 = new THREE.Color(0xFFFF33);
+
+				// 显得材质可以由2点的颜色决定
+				var p1 = new THREE.Vector3(0, 0, 0);
+				var p2 = new THREE.Vector3(0, 100, 0);
+				geometry.vertices.push(p1);
+				geometry.vertices.push(p2);
+				geometry.colors.push(color1, color2);
+
+				var line = new THREE.Line(geometry, material, THREE.LinePieces);
+				scene.add(line);
+
+			}
+
+			function initLineZ() {
+				var geometry = new THREE.Geometry();
+				var material = new THREE.LineBasicMaterial({
+					vertexColors: THREE.VertexColors,
+				});
+				var color1 = new THREE.Color(0x99CCFF);
+				var color2 = new THREE.Color(0x99CCFF);
+
+				// 显得材质可以由2点的颜色决定
+				var p1 = new THREE.Vector3(0, 0, 0);
+				var p2 = new THREE.Vector3(0, 0, 100);
+				geometry.vertices.push(p1);
+				geometry.vertices.push(p2);
+				geometry.colors.push(color1, color2);
+
+				var line = new THREE.Line(geometry, material, THREE.LinePieces);
+				scene.add(line);
+			}
+
+			function initPointX() {
+				initPoint(10, 0, 0);
+			}
+
+			function initPointY() {
+				initPoint(0, 10, 0);
+			}
+
+			function initPointZ() {
+				initPoint(0, 0, 10);
+			}
+
+			function initPoint(x, y, z) {
+				var geometry = new THREE.CubeGeometry(1, 1, 1);
+
+				var material = new THREE.MeshBasicMaterial({
+					color: 0x00ff00
+				});
+
+				var cube = new THREE.Mesh(geometry, material);
+				cube.position.set(x, y, z);
+				scene.add(cube);
+			}
+
+			function render() {
+				//				camera_angle += Math.PI / 180;
+				//
+				//				camera.position.x = camera_radius * Math.cos(camera_angle);
+				//				camera.position.z = camera_radius * Math.sin(camera_angle);
+				//				
+				//				camera.lookAt(scene.position); //设置相机视野中心
+
+				renderer.clear();
+				renderer.render(scene, camera);
+				requestAnimationFrame(render);
+			}
+
+			function renderByDelta(deltaX, deltaY) {
+				console.log("deltaX:" + deltaX + ",deltaY:" + deltaY);
+
+				camera_angle += (deltaX / Math.PI) / 2;
+				camera_angle_vertical += (deltaY / Math.PI) / 2;
+
+				camera.position.x = camera_radius * Math.cos(camera_angle);
+				camera.position.z = camera_radius * Math.sin(camera_angle);
+
+				camera.position.y = camera_radius * Math.sin(camera_angle_vertical);
+				camera.position.z = camera_radius * Math.cos(camera_angle_vertical);
+
+//				camera.up.y = (camera.position.z >= 0) ? 1 : -1;
+
+				camera.lookAt(scene.position); //设置相机视野中心
+
+				renderer.clear();
+				renderer.render(scene, camera);
+				//				requestAnimationFrame();
+			}
+
+			function threeStart() {
+				initThree();
+				initCamera();
+				initScene();
+				initLight();
+				initLineX();
+				initLineY();
+				initLineZ();
+				initPointX();
+				initPointY();
+				initPointZ();
+				render();
+			}
+
+			var touchX;
+			var touchY;
+
+			function moveCameraByTouch(e) {
+				var deltaX = e.clientX - touchX;
+				var deltaY = e.clientY - touchY;
+				touchX = e.clientX;
+				touchY = e.clientY;
+				renderByDelta(deltaX, deltaY);
+			}
+
+			function removeCameraByTouch() {
+				document.removeEventListener("mousemove", moveCameraByTouch);
+			}
+			
+			document.addEventListener("mousedown", function(e) {
+				touchX = e.clientX;
+				touchY = e.clientY;
+
+				document.addEventListener("mousemove", moveCameraByTouch);
+				document.addEventListener("mouseup", removeCameraByTouch);
+			});
+
+			//			function moveCameraByTouch1(e) {
+			//				var deltaX = e.touches[0].clientX - touchX;
+			//				var deltaY = e.touches[0].clientY - touchY;
+			//				touchX = e.clientX;
+			//				touchY = e.clientY;
+			//				renderByDelta(deltaX,deltaY);
+			//			}
+			//
+			//			function removeCameraByTouch1() {
+			//				document.removeEventListener("touchmove", moveCameraByTouch1);
+			//			}
+
+			
+
+			//			document.addEventListener("touchstart", function(e) {
+			//				touchX = e.touches[0].clientX;
+			//				touchY = e.touches[0].clientY;
+			//
+			//				document.addEventListener("touchmove", moveCameraByTouch1);
+			//				document.addEventListener("touchend", removeCameraByTouch1);
+			//			});
+		</script>
+	</head>
+
+	<body onload="threeStart()">
+		<div id="canvas-frame"></div>
+	</body>
+
+</html>

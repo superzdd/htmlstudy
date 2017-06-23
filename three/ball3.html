@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/three.min.js"></script>
+		<script src="../js/OrbitControls.js"></script>
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+		<script>
+			var renderer;
+
+			function initThree() {
+				var w_width = document.body.clientWidth;
+				var w_height = document.body.clientHeight;
+
+				document.getElementById('canvas-frame').width = w_width;
+				document.getElementById('canvas-frame').height = w_height;
+
+				width = document.getElementById('canvas-frame').width;
+				height = document.getElementById('canvas-frame').height;
+				renderer = new THREE.WebGLRenderer({
+					antialias: true,
+					alpha: true,
+				});
+
+				renderer.setSize(width, height);
+				document.getElementById('canvas-frame').appendChild(renderer.domElement);
+				renderer.setClearColor(0xCCFF99, 0.0);
+			}
+
+			var camera;
+			var _cx = 50;
+			
+			function initCamera() {
+				camera = new THREE.PerspectiveCamera(75, width / height, 1, 10000);
+				camera.position.x = _cx;
+				camera.position.y = -_cx;
+				camera.position.z = _cx;
+				camera.up.x = 0;
+				camera.up.y = 1;
+				camera.up.z = 0;
+				camera.lookAt({
+					x: 0,
+					y: 0,
+					z: 0
+				})
+			}
+
+			var scene;
+
+			function initScene() {
+				scene = new THREE.Scene();
+			}
+
+			var light;
+
+			function initLight() {
+//				light = new THREE.AmbientLight(0x66FFFF);
+//				scene.add(light);
+			}
+
+			var controls;
+
+			function initControl() {
+				controls = new THREE.OrbitControls(camera, renderer.domElement);
+				controls.addEventListener('change', render);
+				controls.enableDamping = true;
+				controls.dampingFactor = 1;
+				controls.enableZoom = true;
+			}
+
+			var sphere;
+			var group;
+
+			function initObject() {
+				group = new THREE.Group();
+				scene.add(group);
+
+				initEarth();
+				return;
+			}
+
+			function initEarth() {
+				var loader = new THREE.TextureLoader();
+				loader.load('../img/point_earth.png', function(texture) {
+//				loader.load('../img/water_4k.png', function(texture) {
+					var g = new THREE.SphereGeometry(20, 32, 32);
+					var m = new THREE.MeshBasicMaterial({
+						transparent: true,
+						opacity: 0.5,
+						depthWrite:false,
+						depthTest:false,
+						side: THREE.DoubleSide,
+						map: texture,
+					});
+					var b = new THREE.Mesh(g, m);
+					group.add(b);
+				});
+			}
+
+			function render() {
+				renderer.render(scene, camera);
+			}
+
+			function threeStart() {
+				initThree();
+				initCamera();
+				initScene();
+				initLight();
+				initObject();
+				initControl();
+				animate();
+			}
+
+			function animate() {
+				requestAnimationFrame(animate);
+				controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
+				render();
+			}
+		</script>
+	</head>
+
+	<body onload="threeStart()">
+		<div id="canvas-frame"></div>
+	</body>
+
+</html>

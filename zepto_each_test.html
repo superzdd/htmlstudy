@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="js/zepto.js" ></script>
+	</head>
+	<body>
+		<p class="p" id="p1">1</p>
+		<p class="p" id="p2">1</p>  
+		<p class="p" id="p3">1</p>  
+		<p class="p" id="p4">1</P>
+		<p class="p" id="p5">1</P>
+		<p class="p" id="p6">1</P>
+		<p class="p" id="p7">1</P>
+		<p class="p" id="p8">1</P>
+		<p class="p" id="p9">1</P>
+		<div class="td"><div>111</div></div>
+		
+		<script type="text/javascript">
+			function test(){
+				$.each($(".p"),function(){
+					console.log("new each:"+this.id);
+					
+					if(this.id == "p5"){
+						return false;
+					}
+				})
+				
+				
+				$(".p").each(function(){
+					console.log(this.id);
+					
+					if(this.id == "p5"){
+						return false;
+					}
+				});
+				
+//				$(".td").html("test");
+				
+//				alert($(".td").children('div').html());
+				alert($(".td").firstChild().html());
+			}
+			
+			test();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/three.min.js"></script>
+		<script src="../js/OrbitControls.js"></script>
+		<style>
+			/*#canvas-frame {
+				width: 100%;
+				height: 600px;
+			}*/
+			
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+		<script>
+			var renderer;
+
+			function initThree() {
+				var w_width = document.body.clientWidth;
+				var w_height = document.body.clientHeight;
+
+				document.getElementById('canvas-frame').width = w_width;
+				document.getElementById('canvas-frame').height = w_height;
+
+				width = document.getElementById('canvas-frame').width;
+				height = document.getElementById('canvas-frame').height;
+				renderer = new THREE.WebGLRenderer({
+					antialias: true,
+					alpha:true,
+				});
+				
+
+				renderer.setSize(width, height);
+				document.getElementById('canvas-frame').appendChild(renderer.domElement);
+//				renderer.setClearColor(0x000000, 1.0);
+				renderer.setClearColor(0x000000, 0.5);
+			}
+
+			var _cx = 50;
+			var _cy = 50;
+			var _cz = 50;
+
+			var camera;
+			var camera_radius = Math.sqrt(_cx * _cx + _cz * _cz + _cy * _cy);
+			var camera_radius_xz = Math.sqrt(_cx * _cx + _cz * _cz);
+			var camera_angle_xz = Math.atan(_cz / _cx);
+			var camera_radius_yz = Math.sqrt(_cy * _cy + _cz * _cz);
+			var camera_angle_yz = Math.atan(_cz / _cy);
+
+			function initCamera() {
+				camera = new THREE.PerspectiveCamera(75, width / height, 1, 10000);
+				camera.position.x = _cx;
+				camera.position.y = _cy;
+				camera.position.z = _cz;
+				camera.up.x = 0;
+				camera.up.y = 1;
+				camera.up.z = 0;
+				camera.lookAt({
+					x: 0,
+					y: 0,
+					z: 0
+				})
+			}
+
+			var scene;
+
+			function initScene() {
+				scene = new THREE.Scene();
+			}
+
+			var light;
+
+			function initLight() {
+				light = new THREE.DirectionalLight(0x66FFFF, 1.0, 0);
+				light.position.set(100, 100, 200);
+				scene.add(light);
+			}
+
+			var controls;
+
+			function initControl() {
+				controls = new THREE.OrbitControls(camera, renderer.domElement);
+				controls.addEventListener('change', render);
+				controls.enableDamping = true;
+				controls.dampingFactor = 1;
+				controls.enableZoom = true;
+			}
+
+			var sphere;
+			var sphere1;
+
+			var group;
+
+			var imgs = [{
+					name: "earth",
+					path: "../img/2_no_clouds_4k.jpg"
+				},
+				{
+					name: "bump",
+					path: "../img/elev_bump_4k.jpg"
+				},
+				{
+					name: "water",
+					path: "../img/water_4k.png"
+				}
+			];
+
+			var textureManager = {};
+			textureManager.imgs = [];
+			textureManager.getTexture = function(str) {
+				for(var i = 0; i < this.imgs.length; i++) {
+					if(this.imgs[i].name === str) {
+						return this.imgs[i].texture;
+					}
+				}
+
+				return null;
+			}
+
+			function initObject() {
+				group = new THREE.Group();
+				scene.add(group);
+
+				initEarth();
+				return;
+
+				var loader = new THREE.TextureLoader();
+				//				loader.load('../img/2_no_clouds_4k.jpg', function(texture) {
+				//					var g = new THREE.SphereGeometry(20, 32, 32);
+				//					var m = new THREE.MeshBasicMaterial({
+				//						map: texture
+				//					});
+				//					var b = new THREE.Mesh(g, m);
+				//					group.add(b);
+				//				});
+
+				for(var i = 0; i < imgs.length; i++) {
+					var imgName = imgs[i].name;
+					var imgPath = imgs[i].path;
+
+					(function(imgName, imgPath) {
+						loader.load(imgPath, function(result) {
+							var newobj = {
+								name: imgName,
+								texture: result
+							};
+
+							console.log("newobj:" + newobj.name);
+
+							textureManager.imgs.push(newobj);
+
+							if(textureManager.imgs.length === imgs.length) {
+								initEarth();
+							}
+						});
+					})(imgName, imgPath);
+				}
+			}
+
+			function initEarth() {
+//								var g = new THREE.SphereGeometry(0.5, 32, 32);
+//								var m = new THREE.MeshPhongMaterial({
+//									map: THREE.ImageUtils.loadTexture('../img/2_no_clouds_4k.jpg'), //textureManager.getTexture("earth"),
+//									bumpMap: THREE.ImageUtils.loadTexture('../img/elev_bump_4k.jpg'), //textureManager.getTexture("bump"),
+//									bumpScale: 0.005,
+//									specularMap: THREE.ImageUtils.loadTexture('../img/water_4k.png'), //textureManager.getTexture("water"),
+//									specular: new THREE.Color('grey')
+//								});
+//								var b = new THREE.Mesh(g, m);
+//								group.add(b);
+
+				var loader = new THREE.TextureLoader();
+				
+				// transparent
+//				loader.load('../img/point_earth.png', function(texture) {
+//					var g = new THREE.SphereGeometry(20, 32, 32);
+//					var m = new THREE.MeshBasicMaterial({
+////						map: texture
+////						,transparent:true
+//						wireframe:true
+//					});
+//					var b = new THREE.Mesh(g, m);
+//					group.add(b);
+//				});
+
+//				loader.load('../img/point_earth.png', function(texture) {
+//					var g = new THREE.SphereGeometry(20, 32, 32);
+//					var m = new THREE.MeshLambertMaterial({
+//						map:texture,
+//						transparent:true
+//					});
+//					var b = new THREE.Mesh(g, m);
+//					group.add(b);
+//				});
+
+				loader.load('../img/point_earth.png', function(texture) {
+					var g = new THREE.SphereGeometry(20, 32, 32);
+					var m = new THREE.MeshBasicMaterial({
+						transparent:true,
+						opacity:0.5,
+						side:THREE.DoubleSide,
+						color:0xce2121,
+						map:texture,
+					});
+					var b = new THREE.Mesh(g, m);
+					group.add(b);
+				});
+
+//				loader.load('../img/point_earth.png', function(texture) {
+//					var g = new THREE.SphereGeometry(20, 10, 10);
+//					var m = new THREE.MeshBasicMaterial({
+//						color:0x99CCFF
+//						,wireframeLinecap:'round'
+//						,wireframeLinejoin:'round'
+//						,wireframe:true
+//						,wireframeLinewidth:1
+//						,vertexColors:THREE.VertexColors
+//					});
+//					var b = new THREE.Mesh(g, m);
+//					group.add(b);
+//				});
+
+				loader.load('../img/point_earth.png', function(texture) {
+					var g = new THREE.SphereGeometry(20, 32, 32);
+					var m = new THREE.MeshLambertMaterial({
+						map:texture,
+						transparent:true
+					});
+					var b = new THREE.Mesh(g, m);
+					group.add(b);
+				});
+			}
+
+			function render() {
+				//				renderer.clear();
+				renderer.render(scene, camera);
+				//				requestAnimationFrame(render);
+			}
+
+			var touchX;
+			var touchY;
+
+			function threeStart() {
+				initThree();
+				initCamera();
+				initScene();
+				initLight();
+				initObject();
+				initControl();
+				animate();
+			}
+
+			function animate() {
+				requestAnimationFrame(animate);
+				controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
+				render();
+			}
+
+			// 弧度制转角度制
+			function rad2Ang(rad) {
+				return rad * 180 / Math.PI;
+			}
+
+			// 角度制转弧度制
+			function ang2Rad(ang) {
+				return ang / 180 * Math.PI;
+			}
+
+			function getRadius3d(x, y, z) {
+				return Math.sqrt(x * x + y * y + z * z);
+			}
+
+			function getRadius2d(x, y) {
+				return Math.sqrt(x * x + y * y);
+			}
+			
+			//加载带贴图纹理的模型     
+//			function LoadModelWithTexture() {
+//				//加载纹理          
+//				var texture = new THREE.Texture();
+//				//加载图片          
+//				var imgLoader = new THREE.ImageLoader(_manager);
+//				imgLoader.load('Model/ModelTest/map/bhtc_dql_cgd_002.png', function(img) {
+//					//将图片值赋于纹理              
+//					texture.image = img;
+//					texture.needsUpdate = true;
+//				});
+//				//加载模型          
+//				var _loader = new THREE.OBJLoader();
+//				_loader.load('Model/male02.obj', function(obj) {
+//					obj.traverse(function(child) {
+//						if(child instanceof THREE.Mesh) {
+//							//将贴图赋于材质                      
+//							child.material.map = texture;
+//							//重点，没有该句会导致PNG无法正确显示透明效果                      
+//							child.material.transparent = true;
+//						}
+//					});
+//					obj.position.x = -_modelDistance;
+//					_scene.add(obj);
+//				}, onProgress, onError);
+//			}
+		</script>
+	</head>
+
+	<body onload="threeStart()">
+		<div id="canvas-frame"></div>
+	</body>
+
+</html>

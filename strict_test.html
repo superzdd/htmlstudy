@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<script>
+			function f(a) {　　　　 
+				a = 2;　　　　 
+				return [a, arguments[0]];　　 
+			}　　 
+			console.log(f(1)); // 正常模式为[2,2]
+
+			function fb(a) {　
+				"use strict";　　　　
+				a = 2;　　　　
+				return [a, arguments[0]];　　
+			}
+
+			console.log(fb(1)); // 严格模式为[2,1]
+		</script>
+	</body>
+
+</html>

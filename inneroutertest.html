@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<p id="p1">Hello World!<p>hey</p></p>
+		<script>
+			var ele = document.getElementById("p1");
+			console.log("inner html : "+ele.innerHTML);
+			console.log("outer html : "+ele.outerHTML);
+			console.log("inner text : "+ele.innerText);
+			console.log("outer text : "+ele.outerText);
+			
+			// setTimeout('ele.innerHTML = new Date().toLocaleString()',1000); // 只能做一次，之后就卡住了
+//			setTimeout('ele.innerText = new Date().toLocaleString()',1000); // 只能做一次，之后就卡住了
+//			setInterval('ele.outerHTML = new Date().toLocaleString()',1000); //报错 会把整个<p>都变成文本，导致找不到p对象
+			// Uncaught DOMException: Failed to set the 'outerHTML' property on 'Element': This element has no parent node. 
+			// at <anonymous>:1:15
+			setInterval('ele.outerText = new Date().toLocaleString()',1000); //报错
+			//Uncaught DOMException: Failed to set the 'outerText' property on 'HTMLElement': The element has no parent.
+    		// at <anonymous>:1:15
+
+			
+		</script>
+	</body>
+</html>

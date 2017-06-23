@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			canvas {
+				height: 100%;
+				width: 100%;
+			}
+		</style>
+		<script src="../js/three.js"></script>
+	</head>
+
+	<body>
+		<canvas id="three"></canvas>
+		<script>
+			// 三大组件：场景scene，相机camera，渲染器renderer
+			// 将相机拍下的场景渲染的页面中
+
+			var scene = new THREE.Scene(); // 场景 无参构造
+			var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000); // 相机 有多种相机 这里使用的是透视相机，现在还不知道什么是透视相机
+			var renderer = new THREE.WebGLRenderer(); // 渲染器 无参构造，但名称叫做WebGL，考虑到threejs基于webgl的基础，名字也无可厚非,初次之外还有CanvasRenderer,但是要引入CanvasRenderer的js文件，效果会有所不同
+
+			/* 渲染器renderer必须要做的工作，设置大小，加入到父容器中
+			 * 渲染器的画面实际内容都是在domElement中
+			 * renderer的大小必须自己指定，一般是获取父容器的大小后手工赋值
+			 * 加入到父容器时，如果父对象不是一个canvas，会在父对象内部新增一个canvas标签来展示内容，如果父对象就是canvas，则不会新增
+			 */
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.body.appendChild(renderer.domElement);
+
+			/**
+			 * geometry:几何形状
+			 * 就是骨架
+			 * 为THREE.Mesh方法所用
+			 */
+			var geometry = new THREE.CubeGeometry(1, 1, 1);
+
+			/*
+			 * Material：材料
+			 * 就是贴图，皮肤的意思
+			 * 为THREE.Mesh方法所用
+			 */
+			var material = new THREE.MeshBasicMaterial({
+				color: 0x00ff00
+			});
+
+			/*
+			 * 生成物体，包含形状和材料两部分
+			 */
+			var cube = new THREE.Mesh(geometry, material);
+
+			scene.add(cube); // 加入物体，这个物体自己没有设置过位置，最终在出现在场景的正中央
+
+			camera.position.z = 5; // 很重要的话，但是现在没法理解视角和坐标轴的关系
+
+			var axisHelper = new THREE.AxisHelper(10);
+			scene.add(axisHelper);
+
+			function render() {
+				requestAnimationFrame(render);
+				cube.rotation.x += 0.1;
+				cube.rotation.y += 0.1;
+				renderer.render(scene, camera);
+			}
+
+			render();
+		</script>
+	</body>
+
+</html>

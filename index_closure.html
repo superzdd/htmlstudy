@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+	</head>
+	<body>
+		<script charset="UTF-8" type="text/javascript">
+			var name = 'window';
+			var obj1 ={
+				name:'object1',
+				getName:function(){
+					return function(){
+						return this.name;// window
+					}
+				}
+			}
+			
+			var obj2 ={
+				name:'object2',
+				getName:function(){
+					var that = this;
+					return function(){
+						return that.name;// object2
+					}
+				}
+			}
+			
+			alert(obj1.getName()());
+			alert(obj2.getName()());
+		</script> 
+	</body>
+</html>

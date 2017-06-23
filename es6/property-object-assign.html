@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<script>
+			// es6 第9章 属性名表达式
+
+			// ex 1
+			var target = {
+			    a: 1
+			};
+			var source1 = {
+			    b: 2
+			};
+			var source2 = {
+			    c: 3
+			};
+
+			Object.assign(target, source1, source2);
+
+			console.log("ex 1 target:" + JSON.stringify(target));
+
+
+			// ex 2
+			var target = {
+			    a: 1,
+			    b: 1
+			};
+			var source1 = {
+			    b: 2,
+			    c: 2
+			};
+			var source = {
+			    c: 3
+			};
+
+			Object.assign(target, source1, source2);
+			console.log("ex 2 target:" + JSON.stringify(target));
+
+			// ex 3
+			console.log(Object.assign({a:'b'},{[Symbol('c')]:'d'}));
+
+			// ex 4 
+			// 数组复制：按数组序号依次复制（覆盖）
+			var arr1 = [5, 5, 5];
+			var arr2 = [1, 2, 3];
+
+			Object.assign(arr1, arr2);
+			console.log('ex 4: arr1 = ' + arr1);
+
+			// ex 5 
+			// assign的初衷，应该就是用于对象克隆。。。
+
+			// 简单复制
+			function clone(origin) {
+			    return Object.assign({}, origin);
+			}
+
+			// 深度复制，克隆继承的值
+			function clone(origin) {
+			    let originProto = Object.getPrototypeOf(origin);
+			    return Object.assign(Object.create(originProto), origin);
+			}
+
+			// ex 6
+			// 用assign来合并多个对象
+			const merge = (...sources) => Object.assign({}, ...sources);
+
+			var a = {};
+			a = merge({
+			    x: 1
+			}, {
+			    y: 2
+			}, {
+			    z: 3
+			}, {
+			    z: 4
+			});
+			console.log("ex 6 a:" + JSON.stringify(a));
+
+		</script>
+	</body>
+</html>

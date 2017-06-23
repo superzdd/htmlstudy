@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<script>
+			// es6 第9章 属性名表达式
+
+			// ex 1
+			let propKey = 'foo';
+
+			let obj = {
+			    [propKey]: true,
+			    ['ab' + 'c']: 123
+			};
+
+			console.log(JSON.stringify(obj)); // {"foo":true,"abc":123}
+
+			// ex 2
+			let ex2 = {
+				['h'+'ello'](){
+					return 'hi';
+				}
+			}
+
+			console.log(ex2.hello()); // hi
+
+			// ex 3
+			var foo = 'bar';
+			var baz = {[foo]:'abc'};
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="spm-id" content="a1z51.23869752"/>
+    <title>地球上的另一个你</title>
+    <link href="https://ideallife.image.alimmdn.com/impublic/css/style.css" type="text/css" rel="stylesheet">
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/appdata2.js"></script>
+    <script>
+        function parseUA() {
+            var u = navigator.userAgent;
+            var u2 = navigator.userAgent.toLowerCase();
+            return { //移动终端浏览器版本信息
+                trident: u.indexOf('Trident') > -1, //IE内核
+                presto: u.indexOf('Presto') > -1, //opera内核
+                webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+                gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+                mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+                ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                iPad: u.indexOf('iPad') > -1, //是否iPad
+                webApp: u.indexOf('Safari') == -1, //是否web应该程序，没有头部与底部
+                iosv: u.substr(u.indexOf('iPhone OS') + 9, 3),
+                weixin: u2.match(/MicroMessenger/i) == "micromessenger",
+                ali: u.indexOf('AliApp') > -1,
+                weibo: u.match(/WeiBo/i) == "Weibo",
+            };
+        }
+        var ua = parseUA();
+
+        if (!ua.ali && !ua.mobile && AppData.getUrlParam('source') != 'tb') {
+            //location.href = location.origin + "/pc.html";
+        }
+    </script>
+    <script src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="https://s19.cnzz.com/z_stat.php?id=1262115355&web_id=1262115355" language="JavaScript"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/soundjs-0.6.2.min.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/easeljs-0.8.2.min.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/tweenjs-0.6.2.min.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/preloadjs-0.6.2.min.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/jquery-3.2.1.min.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/orienter.min.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/event.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/videoSequence.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/lib/wx.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/weibo.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/loading.js"></script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/main.js"></script>
+
+</head>
+<body bgcolor="#000000">
+    <canvas id="canvas"  width="750" height="1334"></canvas>
+    <img id="loading" src="https://ideallife.image.alimmdn.com/impublic/asset/images/loading.gif" />
+    <div id="container"></div>
+    <img id="tip" src="https://ideallife.image.alimmdn.com/impublic/asset/images/tip.png" />
+    <img id="skip" src="https://ideallife.image.alimmdn.com/impublic/asset/images/skip.png" />
+    <img id="mute" src="https://ideallife.image.alimmdn.com/impublic/asset/images/mute.png" />
+    <img id="unmute" src="https://ideallife.image.alimmdn.com/impublic/asset/images/unmute.png" />
+    <img id="popbtn" src="https://ideallife.image.alimmdn.com/impublic/asset/images/btn618.png" />
+    <img id="pop" src="https://ideallife.image.alimmdn.com/impublic/asset/images/pop618.png" />
+
+    <script>
+        var canvas, stage, exportRoot;
+        var loadMC;
+        var percent = 0;
+
+        var popBtn;
+        var pop;
+        var popAlpha = 0;
+        var timeID;
+
+        setup();
+        function setup() {
+            AppData.isIOS = ua.ios;
+            if(ua.ali){
+                AppData.version = AppData.TB;
+            }
+            else if(ua.weixin){
+                AppData.version = AppData.WX;
+            }
+            else if(ua.weibo){
+                AppData.version = AppData.WEIBO;
+                AppData.isIOS = false;
+            }
+            else{
+                AppData.version = AppData.OTHER;
+            }
+            canvas = document.getElementById("canvas");
+            images = images||{};
+            LoadingImages = LoadingImages||{};
+            ss = ss||{};
+
+
+            var loader = new createjs.LoadQueue(false);
+            loader.addEventListener("fileload", handleFileLoad);
+            loader.addEventListener("complete", showLoading);
+            loader.loadFile({src:"https://ideallife.image.alimmdn.com/impublic/asset/images/loading/loading_atlas_.json", type:"spritesheet", id:"loading_atlas_"}, true);
+            loader.loadManifest(LoadingLib.properties.manifest);
+        }
+
+        function handleFileLoad(evt) {
+            if(!loadMC){
+                if (evt.item.type == "image") { LoadingImages[evt.item.id] = evt.result; }
+            }
+            else{
+                if (evt.item.type == "image") {
+                    images[evt.item.id] = evt.result;
+                    if(evt.item.stage == "ending"){
+                        AppData.endingClip[evt.item.clip][evt.item.index] = evt.result;
+                    }
+                }
+            }
+        }
+
+        function showLoading(evt) {
+            ss["loading_atlas_"] = evt.target.getResult("loading_atlas_");
+            loadMC = new LoadingLib.loading();
+            stage = new createjs.Stage(canvas);
+            stage.addChild(loadMC);
+            stage.update();
+
+
+
+            createjs.Ticker.setFPS(lib.properties.fps);
+            createjs.Ticker.addEventListener("tick", stage);
+
+            AppData.tracking('event','loading','loading_scene');
+
+            var loader = new createjs.LoadQueue(false);
+
+            for(var i = 1; i <= 5; i++){
+                loader.loadFile({src:"https://ideallife.image.alimmdn.com/impublic/asset/images/ending/clip" + i + "/clip" + i + "_atlas_1.jpg",
+                    id:"clip" + i + "_1",
+                    stage:"ending",
+                    clip:i-1,
+                    index:0});
+                loader.loadFile({src:"https://ideallife.image.alimmdn.com/impublic/asset/images/ending/clip" + i + "/clip" + i + "_atlas_2.jpg",
+                    id:"clip" + i + "_2",
+                    stage:"ending",
+                    clip:i-1,
+                    index:1});
+                AppData.endingClip.push([0,0]);
+            }
+            loader.loadFile({src:"https://ideallife.image.alimmdn.com/impublic/asset/images/main/main_atlas_.json", type:"spritesheet", id:"main_atlas_"}, true);
+            loader.addEventListener("fileload", handleFileLoad);
+            loader.addEventListener("progress", onCheckLoading);
+            loader.addEventListener("complete", onChangeContent);
+            loader.loadManifest(lib.properties.manifest);
+        }
+
+        function onCheckLoading(evt) {
+            percent = Math.floor(evt.progress * 100);
+            if(AppData.percent >= 100){
+                return;
+            }
+            AppData.percent = percent;
+            E.fireEvent("UpdatePercent");
+        }
+
+        function onChangeContent(evt) {
+            stage.removeChild(loadMC);
+            var loadingGif = document.getElementById("loading");
+            loadingGif.style.display = "none";
+            loadMC = null;
+
+            popBtn = document.getElementById('popbtn');
+            pop = document.getElementById('pop');
+            popBtn.addEventListener('touchstart', showPop);
+            pop.addEventListener('touchstart', hidePop);
+
+            ss["main_atlas_"] = evt.target.getResult("main_atlas_");
+            exportRoot = new lib.main();
+            stage.addChild(exportRoot);
+            createjs.Touch.enable(stage);
+            E.addEvent('LoadVideo', onLoadVideo);
+
+            AppData.tracking('event', 'Home', 'Homepage');
+        }
+
+        function onLoadVideo() {
+            var arr = [];
+            AppData.videoClip = new Array(1182);
+            AppData.videoInfo.totalFrames = 1182;
+            for(var i = 0; i <= 1181; i++){
+                arr.push({src:"https://ideallife.image.alimmdn.com/impublic/asset/video/sequence2/all_" + AppData.getNumberString(i, 4) + ".jpg",id:i});
+            }
+            videoSequence.setup(150);
+            videoSequence.addSequence(arr);
+            videoSequence.startLoad();
+        }
+
+        document.addEventListener('WV.Event.APP.Background', function () {
+            E.fireEvent("PAUSE_ALL");
+            createjs.Ticker.removeEventListener("tick", stage);
+        }, false);
+
+        document.addEventListener('WV.Event.APP.Active', function () {
+            E.fireEvent("ACTIVE_ALL");
+            if(AppData.videoInfo.state != 1){
+                createjs.Ticker.addEventListener("tick", stage);
+            }
+        }, false);
+
+        document.addEventListener('WV.Event.APP.Lock', function () {
+            E.fireEvent("PAUSE_ALL");
+            createjs.Ticker.removeEventListener("tick", stage);
+        }, false);
+
+
+        function showPop() {
+            pop.style.display = 'block';
+            popAlpha += (1 - popAlpha) * .3;
+            if(popAlpha >= .95){
+                popAlpha = 1;
+            }
+            else{
+                timeID = setTimeout(showPop, 40);
+            }
+            pop.style.opacity = popAlpha;
+        }
+
+        function hidePop() {
+            clearTimeout(timeID);
+            pop.style.display = 'none';
+            pop.style.opacity = 0;
+            popAlpha = 0;
+        }
+    </script>
+    <script src="https://ideallife.image.alimmdn.com/impublic/js/index4.js"></script>
+    <script src="//g.alicdn.com/tmapp/tida2/2.2.16/tida.js?appkey=23869752"></script>
+</body>
+</html>

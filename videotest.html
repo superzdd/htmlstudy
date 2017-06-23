@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="js/zepto.js"></script>
+		<script src="js/video.js"></script>
+		<script>
+			var isplaying = false;
+
+			var SHAKE_THRESHOLD = 200;
+			var last_update = 0;
+			var x, y, z, last_x, last_y, last_z;
+
+			function deviceMotionHandler(eventData) {
+				var acceleration = eventData.accelerationIncludingGravity;
+				var curTime = new Date().getTime();
+				if((curTime - last_update) > 100) {
+					var diffTime = curTime - last_update;
+					last_update = curTime;
+					x = acceleration.x;
+					y = acceleration.y;
+					z = acceleration.z;
+					//					var speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
+
+					var speed = Math.abs(x + y - last_x - last_y) / diffTime * 10000;
+
+					if(speed > SHAKE_THRESHOLD) {
+//						alert("shaked!");
+
+						var video = document.getElementById("vd");
+						if(!isplaying) {
+							h5v.play();
+							isplaying = true;
+						} else {
+							h5v.pause();
+							isplaying = false;
+						}
+					}
+					last_x = x;
+					last_y = y;
+					last_z = z;
+
+				}
+			}
+
+			window.addEventListener("load", function() {
+				var video = document.getElementById("vd");
+				if(!isplaying) {
+					h5v.play();
+					isplaying = true;
+				} else {
+					h5v.pause();
+					isplaying = false;
+				}
+
+				if(window.DeviceMotionEvent) {
+					window.addEventListener('devicemotion', deviceMotionHandler, false);
+				}
+			});
+		</script>
+	</head>
+
+	<body>
+		<!--<video id="vd" src="img/video.mp4" controls="controls">your browser does not support the video tag</video>-->
+	</body>
+
+</html>

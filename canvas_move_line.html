@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript">
+			function draw(id){
+				var canvas = document.getElementById(id);
+				if(canvas == null){
+					return;
+				}
+				var context = canvas.getContext("2d");
+				context.fillStyle = "red";
+				context.translate(50,50);
+				context.rotate(45);
+				context.fillRect(0,0,100,100);
+			}
+			
+//			draw("canvas");
+		</script>
+	</head>
+	<body onload="draw('canvas')">
+		
+			<canvas id="canvas" width="300px" height="400px"></canvas>
+	</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/three.js"></script>
+		<style>
+			#canvas-frame {
+				width: 100%;
+				height: 600px;
+			}
+		</style>
+		<script>
+			var renderer;
+
+			function initThree() {
+				width = document.getElementById('canvas-frame').clientWidth;
+				height = document.getElementById('canvas-frame').clientHeight;
+				renderer = new THREE.WebGLRenderer({
+					antialias: true,
+				});
+
+				renderer.setSize(width, height);
+				document.getElementById('canvas-frame').appendChild(renderer.domElement);
+				renderer.setClearColor(0x000000, 1.0);
+			}
+
+			var _cx = 50;
+			var _cy = 50;
+			var _cz = 50;
+
+			var camera;
+			var camera_radius = Math.sqrt(_cx * _cx + _cz * _cz + _cy * _cy);
+			var camera_radius_xz = Math.sqrt(_cx * _cx + _cz * _cz);
+			var camera_angle_xz = Math.atan(_cz / _cx);
+			var camera_radius_yz = Math.sqrt(_cy * _cy + _cz * _cz);
+			var camera_angle_yz = Math.atan(_cz / _cy);
+
+			function initCamera() {
+				camera = new THREE.PerspectiveCamera(75, width / height, 1, 10000);
+				camera.position.x = _cx;
+				camera.position.y = _cy;
+				camera.position.z = _cz;
+				camera.up.x = 0;
+				camera.up.y = 1;
+				camera.up.z = 0;
+				camera.lookAt({
+					x: 0,
+					y: 0,
+					z: 0
+				})
+			}
+
+			var scene;
+
+			function initScene() {
+				scene = new THREE.Scene();
+			}
+
+			var light;
+
+			function initLight() {
+				light = new THREE.DirectionalLight(0x000000, 1.0, 0);
+				light.position.set(100, 100, 200);
+				scene.add(light);
+			}
+
+			var sphere;
+			var sphere1;
+
+			var group;
+
+			function initObject() {
+				//				var geometry = new THREE.SphereGeometry(5, 32, 32);
+				//				var material = new THREE.MeshBasicMaterial({
+				//					color: 0xffff00,
+				//					wireframe: true
+				//				});
+				//				sphere = new THREE.Mesh(geometry, material);
+				//				scene.add(sphere);
+				//
+				//				var geometry1 = new THREE.SphereGeometry(6, 16, 16);
+				//				var material1 = new THREE.MeshBasicMaterial({
+				//					color: 0xFF0000,
+				//					wireframe: true
+				//				});
+				//				sphere1 = new THREE.Mesh(geometry1, material1);
+				//				scene.add(sphere1);
+				group = new THREE.Group();
+				scene.add(group);
+
+				var loader = new THREE.TextureLoader();
+				loader.load('../img/2_no_clouds_4k.jpg', function(texture) {
+					//					var geometry1 = new THREE.SphereGeometry(200, 20, 20);
+					//					var material1 = new THREE.MeshBasicMaterial({
+					//						map: texture,
+					//						overdraw: 0.5
+					//					});
+					//					sphere1 = new THREE.Mesh(geometry1, material1);
+					//					scene.add(sphere1);
+
+					var g = new THREE.SphereGeometry(20, 32, 32);
+					var m = new THREE.MeshBasicMaterial({
+						//						color: 0x33FFFF,
+						//						wireframe: true,
+						map: texture
+					});
+					var b = new THREE.Mesh(g, m);
+					group.add(b);
+				});
+
+			}
+
+			function render() {
+				renderer.clear();
+				renderer.render(scene, camera);
+				requestAnimationFrame(render);
+			}
+
+			var touchX;
+			var touchY;
+
+			function renderByDelta(deltaX, deltaY) {
+				//				console.log("deltaX:" + deltaX + ",deltaY:" + deltaY);
+				//
+				//				camera_angle_xz += (deltaX / Math.PI) / 2;
+				//				camera_angle_yz += (deltaY / Math.PI) / 2;
+				//
+				//				camera.position.x = camera_radius_xz * Math.cos(camera_angle_xz);
+				//				camera.position.z = camera_radius_xz * Math.sin(camera_angle_xz);
+				//
+				//				camera.position.y = camera_radius_yz * Math.sin(camera_angle_yz);
+				//				camera.position.z = camera_radius_yz * Math.cos(camera_angle_yz);
+				//
+				//				camera.lookAt(scene.position); //设置相机视野中心
+				//
+				//				renderer.clear();
+				//				renderer.render(scene, camera);
+
+				//				console.log("deltaX:" + deltaX + ",deltaY:" + deltaY);
+				//
+				//				var dx = deltaX / 10;
+				//				var dy = deltaY / 10;
+				//
+				//				camera.position.x -= dx;
+				//				camera.position.y += dy;
+				//
+				//				var dz = Math.sqrt(camera_radius * camera_radius - camera.position.x * camera.position.x - camera.position.y * camera.position.y);
+				//				var dz1 = dz * -1;
+				//
+				//				if(Math.abs(dz - camera.position.z) > Math.abs(dz * -1 - camera.position.z)) {
+				//					dz = dz * -1;
+				//				}
+				//
+				//				camera.position.z = dz;
+				//
+				//				camera.lookAt(scene.position); //设置相机视野中心
+				//
+				//				renderer.clear();
+				//				renderer.render(scene, camera);
+
+				//				console.log("deltaX:" + deltaX + ",deltaY:" + deltaY);
+				var width = document.getElementById('canvas-frame').clientWidth;
+				var height = document.getElementById('canvas-frame').clientHeight;
+
+				var dx = deltaX / 3;
+				var dy = deltaY / 3 * (height / width);
+
+				if(getRadius2d(dx, dy) <= 0.1) {
+					return;
+				}
+
+				var r_xz = Math.sqrt(camera.position.x * camera.position.x + camera.position.z * camera.position.z);
+				var theta_xz = dx / r_xz;
+				camera_angle_xz += theta_xz;
+				camera_angle_xz = camera_angle_xz % (2 * Math.PI)
+				camera.position.x = r_xz * Math.cos(camera_angle_xz);
+				camera.position.z = r_xz * Math.sin(camera_angle_xz);
+
+				var r_yz = Math.sqrt(camera.position.y * camera.position.y + camera.position.z * camera.position.z)
+				var theta_yz = dy / r_yz;
+
+				camera_angle_yz -= theta_yz;
+
+				var ignoreYZ = false;
+				if(rad2Ang(camera_angle_yz) >= 175) {
+					camera_angle_yz = ang2Rad(175);
+					ignoreYZ = true;
+				} else if(rad2Ang(camera_angle_yz) <= 5) {
+					camera_angle_yz = ang2Rad(5);
+					ignoreYZ = true;
+				}
+
+				if(!ignoreYZ) {
+					camera.position.y = r_yz * Math.cos(camera_angle_yz);
+					camera.position.z = r_yz * Math.sin(camera_angle_yz);
+				}
+
+				camera.lookAt(scene.position); //设置相机视野中心
+
+				renderer.clear();
+				renderer.render(scene, camera);
+
+				console.log("x:" + camera.position.x.toFixed(2) +
+					",y:" + camera.position.y.toFixed(2) +
+					",z:" + camera.position.z.toFixed(2) +
+					//						",r:" + getRadius3d(camera.position.x, camera.position.y, camera.position.z).toFixed(2) +
+					",camera_angle_xz:" + rad2Ang(camera_angle_xz).toFixed(2) +
+					",camera_angle_yz:" + rad2Ang(camera_angle_yz).toFixed(2));
+
+			}
+
+			function moveCameraByTouch(e) {
+				var deltaX = e.clientX - touchX;
+				var deltaY = e.clientY - touchY;
+				touchX = e.clientX;
+				touchY = e.clientY;
+				renderByDelta(deltaX, deltaY);
+			}
+
+			function removeCameraByTouch() {
+				document.removeEventListener("mousemove", moveCameraByTouch);
+			}
+
+			document.addEventListener("mousedown", function(e) {
+				touchX = e.clientX;
+				touchY = e.clientY;
+
+				document.addEventListener("mousemove", moveCameraByTouch);
+				document.addEventListener("mouseup", removeCameraByTouch);
+			});
+
+			function threeStart() {
+				initThree();
+				initCamera();
+				initScene();
+				initLight();
+				initObject();
+				render();
+			}
+
+			// 弧度制转角度制
+			function rad2Ang(rad) {
+				return rad * 180 / Math.PI;
+			}
+
+			// 角度制转弧度制
+			function ang2Rad(ang) {
+				return ang / 180 * Math.PI;
+			}
+
+			function getRadius3d(x, y, z) {
+				return Math.sqrt(x * x + y * y + z * z);
+			}
+
+			function getRadius2d(x, y) {
+				return Math.sqrt(x * x + y * y);
+			}
+		</script>
+	</head>
+
+	<body onload="threeStart()">
+		<div id="canvas-frame"></div>
+	</body>
+
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<script>
+			// es6 第9章 属性名表达式
+			// ex 1
+			// rest ... 将所有可遍历但未被读取的属性，分配到指定的对象上
+			// 例子表示 o3 = o2 -> o1
+			let o1 = {
+			    a: 1
+			};
+
+			let o2 = {
+			    b: 2
+			};
+
+			o2._proto_ = o1;
+
+			let o3 = {...o2
+			};
+
+			console.log("o3.a : " + o3.a); // o3.a : undefined
+
+			console.log("o3.b : " + o3.b); // o3.b : 2
+
+			// ex 2
+			// ...可以当成是Object.assign的一种简写形式，...相当于讲一个对象拆成属性的数组
+
+			let z = {
+			    a: 1,
+			    b: 2
+			};
+
+			let n = {...z
+			};
+
+			let m = Object.assign({}, z); // m 和 n等价
+
+			console.log("n : "+JSON.stringify(n)); // n : {"a":1,"b":2}
+
+			console.log("m : "+JSON.stringify(m)); // m : {"a":1,"b":2}
+
+		</script>
+	</body>
+
+</html>

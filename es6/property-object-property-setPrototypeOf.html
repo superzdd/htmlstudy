@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<script>
+			// es6 第9章 属性名表达式
+
+			// ex 1 setPropertyOf
+			// 设置对象的原始类型
+			// 感觉上类似于指定父类,继承，和object.assign有什么区别?
+			var son = {};
+			var son1 = {};
+			var parent1 = {
+			    age: 50,
+			    height: 180
+			}
+
+			Object.setPrototypeOf(son,parent1); // 赋值给son的原始类型，原始类型是不可枚举类型
+
+			Object.assign(son1,parent1); // 添加普通属性，是可以枚举的
+
+			console.log("son : " + console.log(JSON.stringify(son))); // son : undefined
+
+			console.log("son1 : " + console.log(JSON.stringify(son1))); // {"age":50,"height":180}
+
+			console.log("son getPrototypeOf: " + JSON.stringify(Object.getPrototypeOf(son))); // son getPrototypeOf: {"age":50,"height":180}
+
+			console.log("son.age : " + son.age); // son.age : 50
+
+			console.log("son.age descriptor: " + Object.getOwnPropertyDescriptor(son.age)); // son.age descriptor: undefined
+
+			console.log("son.age getPrototypeOf descriptor: " + Object.getOwnPropertyDescriptor(Object.getPrototypeOf(son).age)); // son.age getPrototypeOf descriptor: undefined
+
+			console.log("son.height : " + son.height); // son.height : 180
+
+			console.log("son.height descriptor: " + Object.getOwnPropertyDescriptor(son.height)); // son.height descriptor: undefined
+
+			console.log("son.height getPrototypeOf descriptor: " + Object.getOwnPropertyDescriptor(Object.getPrototypeOf(son).height)); // son.height getPrototypeOf descriptor: undefined
+
+		</script>
+	</body>
+</html>

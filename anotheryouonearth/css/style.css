@@ -1,0 +1,58 @@
+video, canvas, #tip{
+    position:absolute;
+    width:100%;
+    left:0px;
+    right:0px;
+    bottom:0px;
+}
+
+video, img{
+    display: none;
+}
+
+#tip{
+    opacity: 0;
+}
+
+#skip{
+    width:6.6%;
+    position:absolute;
+    right:13.6%;
+    top:5.3%;
+}
+
+#mute, #unmute{
+    width:6.6%;
+    position:absolute;
+    right:4.3%;
+    top:5.3%;
+}
+
+#loading{
+    display: block;
+    position:absolute;
+    width:16.7%;
+    height:21.1%;
+    left:44%;
+    bottom:44%;
+}
+
+#popbtn{
+    display: none;
+    position:absolute;
+    width:21%;
+    left:3.1%;
+    top:5%;
+}
+
+#pop{
+    display: none;
+    position:absolute;
+    width:100%;
+    margin:auto;
+    top:50%;
+    bottom:50%;
+}
+a{
+    display:none;
+}

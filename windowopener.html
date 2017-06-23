@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<script type="text/javascript">
+			myWindow = window.open('', 'MyName', 'width=200,height=100')
+			myWindow.document.write("This is 'myWindow'")
+			myWindow.focus()
+			myWindow.opener.document.write("This is the parent window")
+		</script>
+	</body>
+
+</html>
